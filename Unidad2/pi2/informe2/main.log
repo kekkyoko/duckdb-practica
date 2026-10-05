@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.9.16)  4 OCT 2026 22:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.9.16)  4 OCT 2026 22:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -483,43 +483,43 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
                    \relax 
 l.151 \end{equation}
                      [1] [2] [3]
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 195.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 194.
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 196.
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 195.
 <imagenes/fase1_primeros_registros.png, id=190, 347.04657pt x 312.41719pt>
 File: imagenes/fase1_primeros_registros.png Graphic file (type png)
 <use imagenes/fase1_primeros_registros.png>
-Package pdftex.def Info: imagenes/fase1_primeros_registros.png  used on input line 210.
+Package pdftex.def Info: imagenes/fase1_primeros_registros.png  used on input line 209.
 (pdftex.def)             Requested size: 236.01561pt x 212.46947pt.
  [4 <./imagenes/fase1_primeros_registros.png>]
 <imagenes/fase2_medidas.png, id=210, 730.98094pt x 115.18031pt>
 File: imagenes/fase2_medidas.png Graphic file (type png)
 <use imagenes/fase2_medidas.png>
-Package pdftex.def Info: imagenes/fase2_medidas.png  used on input line 234.
+Package pdftex.def Info: imagenes/fase2_medidas.png  used on input line 233.
 (pdftex.def)             Requested size: 424.82523pt x 66.93994pt.
  [5 <./imagenes/fase2_medidas.png>] [6]
 <imagenes/fase3_diagnostico.png, id=248, 409.53pt x 255.95625pt>
 File: imagenes/fase3_diagnostico.png Graphic file (type png)
 <use imagenes/fase3_diagnostico.png>
-Package pdftex.def Info: imagenes/fase3_diagnostico.png  used on input line 298.
+Package pdftex.def Info: imagenes/fase3_diagnostico.png  used on input line 297.
 (pdftex.def)             Requested size: 330.42041pt x 206.52667pt.
  [7 <./imagenes/fase3_diagnostico.png>]
 <imagenes/fase3_conteo.png, id=271, 766.36313pt x 115.93312pt>
 File: imagenes/fase3_conteo.png Graphic file (type png)
 <use imagenes/fase3_conteo.png>
-Package pdftex.def Info: imagenes/fase3_conteo.png  used on input line 329.
+Package pdftex.def Info: imagenes/fase3_conteo.png  used on input line 328.
 (pdftex.def)             Requested size: 424.82523pt x 64.26756pt.
  [8 <./imagenes/fase3_conteo.png>]
 <imagenes/boxplot_excel.png, id=294, 734.745pt x 479.829pt>
 File: imagenes/boxplot_excel.png Graphic file (type png)
 <use imagenes/boxplot_excel.png>
-Package pdftex.def Info: imagenes/boxplot_excel.png  used on input line 363.
+Package pdftex.def Info: imagenes/boxplot_excel.png  used on input line 362.
 (pdftex.def)             Requested size: 472.03123pt x 308.26826pt.
  [9 <./imagenes/boxplot_excel.png>]
 <imagenes/log_comandos.png, id=303, 553.31718pt x 510.40688pt>
 File: imagenes/log_comandos.png Graphic file (type png)
 <use imagenes/log_comandos.png>
-Package pdftex.def Info: imagenes/log_comandos.png  used on input line 388.
+Package pdftex.def Info: imagenes/log_comandos.png  used on input line 387.
 (pdftex.def)             Requested size: 236.01561pt x 217.71054pt.
  [10 <./imagenes/log_comandos.png>] [11] [12] (./main.bbl) [13] (./main.aux
 LaTeX Info: Redefining \. on input line 11.
@@ -541,7 +541,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  74i,8n,79p,1045b,2067s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfcc1200.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sftt1200.pfb>
-Output written on main.pdf (16 pages, 1075516 bytes).
+Output written on main.pdf (16 pages, 1075149 bytes).
 PDF statistics:
  439 PDF objects out of 1000 (max. 8388607)
  367 compressed objects within 4 object streams
