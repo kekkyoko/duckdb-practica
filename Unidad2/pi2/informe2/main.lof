@@ -1,0 +1,7 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Primeros 10 registros de la tabla \texttt {telemetria\_servidor}.}}{4}{figure.caption.3}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Resultado de las medidas descriptivas calculadas en DuckDB.}}{5}{figure.caption.4}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Clasificación de las peticiones según la Regla de Tukey.}}{7}{figure.caption.6}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Límites de Tukey y conteo total de anomalías.}}{8}{figure.caption.7}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Diagrama de caja y bigotes de la latencia del servidor generado en Excel.}}{9}{figure.caption.9}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Fragmento del log de comandos generado por DuckDB.}}{10}{figure.caption.10}%

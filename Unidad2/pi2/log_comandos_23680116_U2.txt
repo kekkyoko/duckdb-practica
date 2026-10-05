@@ -1,0 +1,227 @@
+SELECT setseed(0.42);
+┌───────────────┐
+│ setseed(0.42) │
+│     int32     │
+├───────────────┤
+│          NULL │
+└───────────────┘
+
+CREATE TEMP TABLE telemetria_servidor AS
+SELECT
+    peticion_id,
+    CASE
+        WHEN random() < 0.05 THEN ROUND(120 + (random() * 130), 2) 
+        ELSE ROUND(35 + (random() * 30), 2)                         
+    END AS latencia_ms
+FROM generate_series(1, 100) AS t(peticion_id);
+
+SELECT * FROM telemetria_servidor LIMIT 10;
+┌─────────────┬─────────────┐
+│ peticion_id │ latencia_ms │
+│    int64    │   double    │
+├─────────────┼─────────────┤
+│           1 │       40.48 │
+│           2 │        44.6 │
+│           3 │       49.66 │
+│           4 │       50.96 │
+│           5 │       38.16 │
+│           6 │       36.75 │
+│           7 │        49.7 │
+│           8 │       42.42 │
+│           9 │       43.11 │
+│          10 │       60.34 │
+└─────────────┴─────────────┘
+  10 rows         2 columns
+
+SELECT
+    ROUND(AVG(latencia_ms), 2)                                   AS Media,
+    ROUND(MEDIAN(latencia_ms), 2)                                AS Mediana,
+    ROUND(STDDEV(latencia_ms), 2)                                AS Desviacion_Estandar,
+    ROUND(MIN(latencia_ms), 2)                                   AS Minimo,
+    ROUND(MAX(latencia_ms), 2)                                   AS Maximo,
+    ROUND(quantile_cont(latencia_ms, 0.25), 2)                   AS Q1_Cuartil1,
+    ROUND(quantile_cont(latencia_ms, 0.75), 2)                   AS Q3_Cuartil3,
+    ROUND(quantile_cont(latencia_ms, 0.75) - quantile_cont(latencia_ms, 0.25), 2) AS IQR
+FROM telemetria_servidor;
+┌────────┬─────────┬─────────────────────┬────────┬────────┬─────────────┬─────────────┬────────┐
+│ Media  │ Mediana │ Desviacion_Estandar │ Minimo │ Maximo │ Q1_Cuartil1 │ Q3_Cuartil3 │  IQR   │
+│ double │ double  │       double        │ double │ double │   double    │   double    │ double │
+├────────┼─────────┼─────────────────────┼────────┼────────┼─────────────┼─────────────┼────────┤
+│  55.44 │   49.95 │                29.8 │  35.02 │ 242.39 │       42.46 │       57.65 │   15.2 │
+└────────┴─────────┴─────────────────────┴────────┴────────┴─────────────┴─────────────┴────────┘
+
+WITH metricas AS (
+    SELECT
+        quantile_cont(latencia_ms, 0.25) AS Q1,
+        quantile_cont(latencia_ms, 0.75) AS Q3,
+        (quantile_cont(latencia_ms, 0.75) - quantile_cont(latencia_ms, 0.25)) AS IQR
+    FROM telemetria_servidor
+),
+limites AS (
+    SELECT
+        Q1, Q3, IQR,
+        (Q1 - 1.5 * IQR) AS limite_inferior,
+        (Q3 + 1.5 * IQR) AS limite_superior
+    FROM metricas
+)
+SELECT
+    t.peticion_id,
+    t.latencia_ms,
+    CASE
+        WHEN t.latencia_ms > l.limite_superior THEN 'ANOMALÍA (Spike Alto)'
+        WHEN t.latencia_ms < l.limite_inferior THEN 'ANOMALÍA (Bajo Rango)'
+        ELSE 'Patrón Normal'
+    END AS diagnostico_sistema
+FROM telemetria_servidor t, limites l
+ORDER BY t.peticion_id;
+┌─────────────┬─────────────┬───────────────────────┐
+│ peticion_id │ latencia_ms │  diagnostico_sistema  │
+│    int64    │   double    │        varchar        │
+├─────────────┼─────────────┼───────────────────────┤
+│           1 │       40.48 │ Patrón Normal         │
+│           2 │        44.6 │ Patrón Normal         │
+│           3 │       49.66 │ Patrón Normal         │
+│           4 │       50.96 │ Patrón Normal         │
+│           5 │       38.16 │ Patrón Normal         │
+│           6 │       36.75 │ Patrón Normal         │
+│           7 │        49.7 │ Patrón Normal         │
+│           8 │       42.42 │ Patrón Normal         │
+│           9 │       43.11 │ Patrón Normal         │
+│          10 │       60.34 │ Patrón Normal         │
+│          11 │       39.83 │ Patrón Normal         │
+│          12 │       60.25 │ Patrón Normal         │
+│          13 │       63.58 │ Patrón Normal         │
+│          14 │       51.87 │ Patrón Normal         │
+│          15 │       64.96 │ Patrón Normal         │
+│          16 │       46.89 │ Patrón Normal         │
+│          17 │       47.44 │ Patrón Normal         │
+│          18 │       37.91 │ Patrón Normal         │
+│          19 │       48.62 │ Patrón Normal         │
+│          20 │       63.78 │ Patrón Normal         │
+│          21 │       52.05 │ Patrón Normal         │
+│          22 │       43.02 │ Patrón Normal         │
+│          23 │        41.2 │ Patrón Normal         │
+│          24 │       45.73 │ Patrón Normal         │
+│          25 │       54.12 │ Patrón Normal         │
+│          26 │       62.52 │ Patrón Normal         │
+│          27 │       55.67 │ Patrón Normal         │
+│          28 │       55.41 │ Patrón Normal         │
+│          29 │       57.72 │ Patrón Normal         │
+│          30 │       60.07 │ Patrón Normal         │
+│          31 │       62.31 │ Patrón Normal         │
+│          32 │        62.1 │ Patrón Normal         │
+│          33 │      177.43 │ ANOMALÍA (Spike Alto) │
+│          34 │       38.05 │ Patrón Normal         │
+│          35 │       47.58 │ Patrón Normal         │
+│          36 │       55.25 │ Patrón Normal         │
+│          37 │       59.73 │ Patrón Normal         │
+│          38 │       46.98 │ Patrón Normal         │
+│          39 │        35.7 │ Patrón Normal         │
+│          40 │       42.13 │ Patrón Normal         │
+│          41 │        63.9 │ Patrón Normal         │
+│          42 │       42.47 │ Patrón Normal         │
+│          43 │       57.39 │ Patrón Normal         │
+│          44 │       41.04 │ Patrón Normal         │
+│          45 │       64.99 │ Patrón Normal         │
+│          46 │        63.9 │ Patrón Normal         │
+│          47 │        51.7 │ Patrón Normal         │
+│          48 │       40.86 │ Patrón Normal         │
+│          49 │       38.62 │ Patrón Normal         │
+│          50 │       42.75 │ Patrón Normal         │
+│          51 │       45.31 │ Patrón Normal         │
+│          52 │       53.74 │ Patrón Normal         │
+│          53 │       55.68 │ Patrón Normal         │
+│          54 │       47.28 │ Patrón Normal         │
+│          55 │       53.48 │ Patrón Normal         │
+│          56 │       53.33 │ Patrón Normal         │
+│          57 │       53.07 │ Patrón Normal         │
+│          58 │       54.84 │ Patrón Normal         │
+│          59 │       47.89 │ Patrón Normal         │
+│          60 │       42.06 │ Patrón Normal         │
+│          61 │      162.86 │ ANOMALÍA (Spike Alto) │
+│          62 │       48.81 │ Patrón Normal         │
+│          63 │       53.26 │ Patrón Normal         │
+│          64 │       50.19 │ Patrón Normal         │
+│          65 │       41.35 │ Patrón Normal         │
+│          66 │      183.33 │ ANOMALÍA (Spike Alto) │
+│          67 │       44.67 │ Patrón Normal         │
+│          68 │       38.39 │ Patrón Normal         │
+│          69 │       51.19 │ Patrón Normal         │
+│          70 │       60.39 │ Patrón Normal         │
+│          71 │       56.69 │ Patrón Normal         │
+│          72 │       40.92 │ Patrón Normal         │
+│          73 │       46.04 │ Patrón Normal         │
+│          74 │        53.9 │ Patrón Normal         │
+│          75 │       57.63 │ Patrón Normal         │
+│          76 │       55.34 │ Patrón Normal         │
+│          77 │       36.92 │ Patrón Normal         │
+│          78 │       47.36 │ Patrón Normal         │
+│          79 │       35.13 │ Patrón Normal         │
+│          80 │       64.31 │ Patrón Normal         │
+│          81 │        60.8 │ Patrón Normal         │
+│          82 │       58.28 │ Patrón Normal         │
+│          83 │      242.39 │ ANOMALÍA (Spike Alto) │
+│          84 │       62.11 │ Patrón Normal         │
+│          85 │       45.19 │ Patrón Normal         │
+│          86 │        35.4 │ Patrón Normal         │
+│          87 │        39.9 │ Patrón Normal         │
+│          88 │       38.67 │ Patrón Normal         │
+│          89 │       48.16 │ Patrón Normal         │
+│          90 │       55.52 │ Patrón Normal         │
+│          91 │        59.8 │ Patrón Normal         │
+│          92 │       43.32 │ Patrón Normal         │
+│          93 │       56.75 │ Patrón Normal         │
+│          94 │       41.15 │ Patrón Normal         │
+│          95 │       44.83 │ Patrón Normal         │
+│          96 │       41.81 │ Patrón Normal         │
+│          97 │       50.76 │ Patrón Normal         │
+│          98 │       61.21 │ Patrón Normal         │
+│          99 │       43.42 │ Patrón Normal         │
+│         100 │       35.02 │ Patrón Normal         │
+└─────────────┴─────────────┴───────────────────────┘
+  100 rows                                3 columns
+
+WITH m AS (
+    SELECT quantile_cont(latencia_ms, 0.25) AS Q1,
+           quantile_cont(latencia_ms, 0.75) AS Q3
+    FROM telemetria_servidor
+),
+l AS (
+    SELECT Q1, Q3, Q1 - 1.5*(Q3-Q1) AS lim_inf, Q3 + 1.5*(Q3-Q1) AS lim_sup FROM m
+)
+SELECT
+    ROUND(l.lim_inf, 2) AS limite_inferior,
+    ROUND(l.lim_sup, 2) AS limite_superior,
+    COUNT(*) FILTER (WHERE t.latencia_ms > l.lim_sup) AS anomalias_spike_alto,
+    COUNT(*) FILTER (WHERE t.latencia_ms < l.lim_inf) AS anomalias_bajo_rango,
+    COUNT(*) FILTER (WHERE t.latencia_ms > l.lim_sup OR t.latencia_ms < l.lim_inf) AS total_anomalias
+FROM telemetria_servidor t, l
+GROUP BY l.lim_inf, l.lim_sup;
+┌─────────────────┬─────────────────┬──────────────────────┬──────────────────────┬─────────────────┐
+│ limite_inferior │ limite_superior │ anomalias_spike_alto │ anomalias_bajo_rango │ total_anomalias │
+│     double      │     double      │        int64         │        int64         │      int64      │
+├─────────────────┼─────────────────┼──────────────────────┼──────────────────────┼─────────────────┤
+│           19.66 │           80.45 │                    4 │                    0 │               4 │
+└─────────────────┴─────────────────┴──────────────────────┴──────────────────────┴─────────────────┘
+
+WITH m AS (
+    SELECT quantile_cont(latencia_ms, 0.25) AS Q1,
+           quantile_cont(latencia_ms, 0.75) AS Q3
+    FROM telemetria_servidor
+)
+SELECT t.peticion_id, t.latencia_ms
+FROM telemetria_servidor t, m
+WHERE t.latencia_ms > m.Q3 + 1.5*(m.Q3-m.Q1)
+   OR t.latencia_ms < m.Q1 - 1.5*(m.Q3-m.Q1)
+ORDER BY t.latencia_ms DESC;
+┌─────────────┬─────────────┐
+│ peticion_id │ latencia_ms │
+│    int64    │   double    │
+├─────────────┼─────────────┤
+│          83 │      242.39 │
+│          66 │      183.33 │
+│          33 │      177.43 │
+│          61 │      162.86 │
+└─────────────┴─────────────┘
+
+COPY telemetria_servidor TO 'telemetria_servidor.csv' (HEADER, DELIMITER ',');

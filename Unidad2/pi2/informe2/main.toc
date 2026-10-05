@@ -1,0 +1,23 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Introducción}{1}{section.1}%
+\contentsline {section}{\numberline {2}Objetivos de la actividad}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Objetivo general}{1}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Objetivos específicos}{1}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Marco teórico}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Medidas de tendencia central y dispersión}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Visualización de datos para análisis exploratorio}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Identificación de patrones y anomalías: Regla de Tukey}{3}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Valores esperados del modelo de simulación}{3}{subsubsection.3.3.1}%
+\contentsline {section}{\numberline {4}Herramientas utilizadas}{3}{section.4}%
+\contentsline {section}{\numberline {5}Desarrollo}{4}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Fase 1: Generación del conjunto de datos sintético}{4}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Fase 2: Caracterización del patrón base}{5}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Cuestionario reflexivo 1}{6}{subsubsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.3}Fase 3: Detección automatizada de anomalías con la Regla de Tukey}{6}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Fase 4: Exportación y validación gráfica en Excel}{8}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Registro de comandos (log)}{10}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Conclusiones de ingeniería}{11}{section.6}%
+\contentsline {subsection}{\numberline {6.1}¿Cuántas peticiones fueron clasificadas como anomalías en total?}{11}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}¿Qué representa el rango intercuartílico (IQR) en el análisis del rendimiento del servidor?}{11}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}¿Qué acciones de infraestructura se recomiendan si este servidor estuviera en producción?}{11}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Conclusión general}{12}{subsection.6.4}%

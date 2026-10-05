@@ -2,7 +2,8 @@
 
 ## QUERYS
 
-guardar comandos en un txt: .output logs_comandos_numcontrol_U1.txt
+guardar comandos en un txt: 
+.output logs_comandos_numcontrol_U1.txt
 
 SET force_download=true;
 
