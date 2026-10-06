@@ -22,3 +22,9 @@
 Un centro de procesamiento de datos monitorea la latencia en milisegundos (ms) de un servidor de servicios web durante 100 peticiones consecutivas. En condiciones normales de operación, el servidor mantiene un comportamiento estable; sin embargo, eventos imprevistos (bloqueos de memoria, picos de tráfico o ataques de denegación de servicio) generan latencias anómalas.
 
 Objetivo del Proyecto: El estudiante utilizará funciones aleatorias en DuckDB para simular la telemetría, calculará las métricas de dispersión y tendencia central para establecer el patrón base, implementará un algoritmo SQL automatizado basado en la Regla de Tukey (IQR) para detectar anomalías de latencia y exportará el dataset a Microsoft Excel para construir un Diagrama de Caja y Bigotes (Boxplot).
+
+## Entorno virtual
+.venv\Scripts\activate
+
+*instalar python-duckdb*
+uv pip install duckdb
