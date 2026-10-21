@@ -1,0 +1,159 @@
+CREATE OR REPLACE TABLE traslado_muestra (
+ id_estudiante INTEGER PRIMARY KEY,
+ tiempo_min DOUBLE
+);
+
+INSERT INTO traslado_muestra VALUES
+(1,15),(2,20),(3,22),(4,25),(5,28),(6,30),(7,30),(8,32),
+(9,35),(10,35),(11,38),(12,40),(13,40),(14,42),(15,45),
+(16,45),(17,48),(18,50),(19,52),(20,55),(21,60),(22,65),
+(23,70),(24,120),(25,180),(26,240),(27,NULL),(28,NULL),
+(29,-10),(30,0);
+
+SELECT COUNT(*) AS total,
+ COUNT(*) - COUNT(tiempo_min) AS nulos,
+ COUNT(*) FILTER (WHERE tiempo_min <= 0) AS invalidos,
+ MIN(tiempo_min) AS minimo_original,
+ MAX(tiempo_min) AS maximo_original
+FROM traslado_muestra;
+┌───────┬───────┬───────────┬─────────────────┬─────────────────┐
+│ total │ nulos │ invalidos │ minimo_original │ maximo_original │
+│ int64 │ int64 │   int64   │     double      │     double      │
+├───────┼───────┼───────────┼─────────────────┼─────────────────┤
+│    30 │     2 │         2 │           -10.0 │           240.0 │
+└───────┴───────┴───────────┴─────────────────┴─────────────────┘
+
+CREATE OR REPLACE TABLE traslado_validado AS
+SELECT id_estudiante, tiempo_min AS tiempo_original,
+ CASE WHEN tiempo_min > 0 THEN tiempo_min ELSE NULL END AS tiempo_valido,
+ CASE WHEN tiempo_min IS NULL THEN 'nulo_original'
+      WHEN tiempo_min <= 0 THEN 'invalido'
+      ELSE 'observado' END AS origen
+FROM traslado_muestra;
+
+CREATE OR REPLACE TABLE traslado_parametros AS
+WITH resumen AS (
+ SELECT COUNT(tiempo_valido) AS n_validos,
+ MEDIAN(tiempo_valido) AS mediana,
+ QUANTILE_CONT(tiempo_valido, 0.25) AS q1,
+ QUANTILE_CONT(tiempo_valido, 0.75) AS q3
+ FROM traslado_validado
+)
+SELECT *, q3-q1 AS ric,
+ q1-1.5*(q3-q1) AS limite_inferior,
+ q3+1.5*(q3-q1) AS limite_superior
+FROM resumen;
+SELECT * FROM traslado_parametros;
+┌───────────┬─────────┬────────┬────────┬────────┬─────────────────┬─────────────────┐
+│ n_validos │ mediana │   q1   │   q3   │  ric   │ limite_inferior │ limite_superior │
+│   int64   │ double  │ double │ double │ double │     double      │     double      │
+├───────────┼─────────┼────────┼────────┼────────┼─────────────────┼─────────────────┤
+│        26 │    41.0 │   30.5 │  54.25 │  23.75 │          -5.125 │          89.875 │
+└───────────┴─────────┴────────┴────────┴────────┴─────────────────┴─────────────────┘
+
+SELECT v.id_estudiante, v.tiempo_original, p.limite_inferior,
+ p.limite_superior
+FROM traslado_validado v CROSS JOIN traslado_parametros p
+WHERE v.tiempo_valido < p.limite_inferior
+   OR v.tiempo_valido > p.limite_superior
+ORDER BY v.id_estudiante;
+┌───────────────┬─────────────────┬─────────────────┬─────────────────┐
+│ id_estudiante │ tiempo_original │ limite_inferior │ limite_superior │
+│     int32     │     double      │     double      │     double      │
+├───────────────┼─────────────────┼─────────────────┼─────────────────┤
+│            24 │           120.0 │          -5.125 │          89.875 │
+│            25 │           180.0 │          -5.125 │          89.875 │
+│            26 │           240.0 │          -5.125 │          89.875 │
+└───────────────┴─────────────────┴─────────────────┴─────────────────┘
+
+CREATE OR REPLACE TABLE traslado_limpio AS
+WITH imputacion AS (
+ SELECT v.*, p.mediana, p.limite_inferior, p.limite_superior,
+ COALESCE(v.tiempo_valido, p.mediana) AS tiempo_imputado,
+ v.tiempo_valido IS NULL AS fue_imputado,
+ CASE WHEN v.tiempo_valido IS NULL THEN FALSE
+      ELSE v.tiempo_valido < p.limite_inferior
+        OR v.tiempo_valido > p.limite_superior END AS es_atipico
+ FROM traslado_validado v CROSS JOIN traslado_parametros p
+)
+SELECT *,
+ CASE WHEN tiempo_imputado < limite_inferior THEN limite_inferior
+      WHEN tiempo_imputado > limite_superior THEN limite_superior
+      ELSE tiempo_imputado END AS tiempo_final
+FROM imputacion;
+SELECT id_estudiante, tiempo_original, origen, fue_imputado,
+ es_atipico, tiempo_imputado, tiempo_final
+FROM traslado_limpio ORDER BY id_estudiante;
+┌───────────────┬─────────────────┬───────────────┬──────────────┬────────────┬─────────────────┬──────────────┐
+│ id_estudiante │ tiempo_original │    origen     │ fue_imputado │ es_atipico │ tiempo_imputado │ tiempo_final │
+│     int32     │     double      │    varchar    │   boolean    │  boolean   │     double      │    double    │
+├───────────────┼─────────────────┼───────────────┼──────────────┼────────────┼─────────────────┼──────────────┤
+│             1 │            15.0 │ observado     │ false        │ false      │            15.0 │         15.0 │
+│             2 │            20.0 │ observado     │ false        │ false      │            20.0 │         20.0 │
+│             3 │            22.0 │ observado     │ false        │ false      │            22.0 │         22.0 │
+│             4 │            25.0 │ observado     │ false        │ false      │            25.0 │         25.0 │
+│             5 │            28.0 │ observado     │ false        │ false      │            28.0 │         28.0 │
+│             6 │            30.0 │ observado     │ false        │ false      │            30.0 │         30.0 │
+│             7 │            30.0 │ observado     │ false        │ false      │            30.0 │         30.0 │
+│             8 │            32.0 │ observado     │ false        │ false      │            32.0 │         32.0 │
+│             9 │            35.0 │ observado     │ false        │ false      │            35.0 │         35.0 │
+│            10 │            35.0 │ observado     │ false        │ false      │            35.0 │         35.0 │
+│            11 │            38.0 │ observado     │ false        │ false      │            38.0 │         38.0 │
+│            12 │            40.0 │ observado     │ false        │ false      │            40.0 │         40.0 │
+│            13 │            40.0 │ observado     │ false        │ false      │            40.0 │         40.0 │
+│            14 │            42.0 │ observado     │ false        │ false      │            42.0 │         42.0 │
+│            15 │            45.0 │ observado     │ false        │ false      │            45.0 │         45.0 │
+│            16 │            45.0 │ observado     │ false        │ false      │            45.0 │         45.0 │
+│            17 │            48.0 │ observado     │ false        │ false      │            48.0 │         48.0 │
+│            18 │            50.0 │ observado     │ false        │ false      │            50.0 │         50.0 │
+│            19 │            52.0 │ observado     │ false        │ false      │            52.0 │         52.0 │
+│            20 │            55.0 │ observado     │ false        │ false      │            55.0 │         55.0 │
+│            21 │            60.0 │ observado     │ false        │ false      │            60.0 │         60.0 │
+│            22 │            65.0 │ observado     │ false        │ false      │            65.0 │         65.0 │
+│            23 │            70.0 │ observado     │ false        │ false      │            70.0 │         70.0 │
+│            24 │           120.0 │ observado     │ false        │ true       │           120.0 │       89.875 │
+│            25 │           180.0 │ observado     │ false        │ true       │           180.0 │       89.875 │
+│            26 │           240.0 │ observado     │ false        │ true       │           240.0 │       89.875 │
+│            27 │            NULL │ nulo_original │ true         │ false      │            41.0 │         41.0 │
+│            28 │            NULL │ nulo_original │ true         │ false      │            41.0 │         41.0 │
+│            29 │           -10.0 │ invalido      │ true         │ false      │            41.0 │         41.0 │
+│            30 │             0.0 │ invalido      │ true         │ false      │            41.0 │         41.0 │
+└───────────────┴─────────────────┴───────────────┴──────────────┴────────────┴─────────────────┴──────────────┘
+  30 rows                                                                                            7 columns
+
+WITH etapas AS (
+ SELECT '1. Original' AS etapa, tiempo_min AS tiempo FROM traslado_muestra
+ UNION ALL
+ SELECT '2. Valido observado', tiempo_valido FROM traslado_validado
+ UNION ALL
+ SELECT '3. Imputado', tiempo_imputado FROM traslado_limpio
+ UNION ALL
+ SELECT '4. Capping', tiempo_final FROM traslado_limpio
+)
+SELECT etapa, COUNT(*) AS filas, COUNT(tiempo) AS disponibles,
+ ROUND(AVG(tiempo),2) AS media, MEDIAN(tiempo) AS mediana,
+ MIN(tiempo) AS minimo, MAX(tiempo) AS maximo,
+ ROUND(STDDEV_SAMP(tiempo),2) AS desviacion_muestral
+FROM etapas GROUP BY etapa ORDER BY etapa;
+┌─────────────────────┬───────┬─────────────┬────────┬─────────┬────────┬────────┬─────────────────────┐
+│        etapa        │ filas │ disponibles │ media  │ mediana │ minimo │ maximo │ desviacion_muestral │
+│       varchar       │ int64 │    int64    │ double │ double  │ double │ double │       double        │
+├─────────────────────┼───────┼─────────────┼────────┼─────────┼────────┼────────┼─────────────────────┤
+│ 1. Original         │    30 │          28 │  51.86 │    40.0 │  -10.0 │  240.0 │               51.18 │
+│ 2. Valido observado │    30 │          26 │  56.23 │    41.0 │   15.0 │  240.0 │               50.48 │
+│ 3. Imputado         │    30 │          30 │   54.2 │    41.0 │   15.0 │  240.0 │               47.16 │
+│ 4. Capping          │    30 │          30 │  45.19 │    41.0 │   15.0 │ 89.875 │               19.66 │
+└─────────────────────┴───────┴─────────────┴────────┴─────────┴────────┴────────┴─────────────────────┘
+
+SELECT COUNT(*) AS total,
+ COUNT(*) FILTER (WHERE tiempo_final IS NULL) AS nulos_finales,
+ COUNT(*) FILTER (WHERE tiempo_final <= 0) AS invalidos_finales,
+ COUNT(*) FILTER (WHERE fue_imputado) AS imputados,
+ COUNT(*) FILTER (WHERE es_atipico) AS atipicos
+FROM traslado_limpio;
+┌───────┬───────────────┬───────────────────┬───────────┬──────────┐
+│ total │ nulos_finales │ invalidos_finales │ imputados │ atipicos │
+│ int64 │     int64     │       int64       │   int64   │  int64   │
+├───────┼───────────────┼───────────────────┼───────────┼──────────┤
+│    30 │             0 │                 0 │         4 │        3 │
+└───────┴───────────────┴───────────────────┴───────────┴──────────┘
