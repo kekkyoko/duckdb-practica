@@ -1,0 +1,19 @@
+2026-11-09 21:23:35 | PRÁCTICA 4.3 | Aplicación de técnicas inferenciales en proyectos reales
+2026-11-09 21:23:35 | Ejecución: 2026-11-09 21:23:35 | duckdb 2.0.0 | scipy 1.18.1 | numpy 2.5.4 | pandas 3.1.0
+2026-11-09 21:23:35 | 
+2026-11-09 21:23:36 | === PROYECTO 1: CONTROL DE CALIDAD DE EJES DE ACERO ===
+2026-11-09 21:23:36 | Tamaño de muestra: n = 50 ejes | Media teórica (H0): 50.00 mm
+2026-11-09 21:23:36 | Media Muestral observada: 50.1090 mm
+2026-11-09 21:23:36 | Intervalo de Confianza 95%: [50.0861 mm, 50.1319 mm]
+2026-11-09 21:23:36 | Estadístico t: 9.5679 | Valor p: 8.5422e-13
+2026-11-09 21:23:36 | VERDICTO INFERENCIAL: Rechazar H0. La línea está descalibrada. ¡DETENER PRODUCCIÓN!
+2026-11-09 21:23:36 | 
+2026-11-09 21:23:36 | === PROYECTO 2: EFICIENCIA ENERGÉTICA EN DATACENTER ===
+2026-11-09 21:23:36 | Tamaño de muestra: n = 60 horas por sistema
+2026-11-09 21:23:36 | Consumo Medio Sistema A (Aire):   131.92 kWh
+2026-11-09 21:23:36 | Consumo Medio Sistema B (Líquido): 116.19 kWh
+2026-11-09 21:23:36 | Ahorro Estimado Promedio:         15.72 kWh/hora
+2026-11-09 21:23:36 | Estadístico t: 15.8771 | Valor p (unilateral): 2.2771e-31
+2026-11-09 21:23:36 | VERDICTO INFERENCIAL: Rechazar H0. Existe evidencia estadística de que el Sistema B reduce el consumo. APROBAR INVERSIÓN.
+2026-11-09 21:23:36 | 
+2026-11-09 21:23:36 | Resultados guardados en 'resultados.log'
